@@ -1,6 +1,6 @@
 use crate::coordinates::Coordinates;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Move {
     EMPTY,
     X,
@@ -61,7 +61,9 @@ impl Board {
         }
 
         // Check if space is occupied
-        // TODO: Not done yet
+        if self.state[coordinate.y as usize][coordinate.x as usize] != Move::EMPTY {
+            return Err("Space is already occupied");
+        }
 
         // Assign move
         self.state[coordinate.y as usize][coordinate.x as usize] = player_move;
