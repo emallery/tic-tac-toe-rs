@@ -51,12 +51,17 @@ impl Board {
 
     pub fn new() -> Board {
         Board {
-            state: [[Move::EMPTY; 3]; 3]
+            state: [[Move::EMPTY; 3]; 3],
         }
     }
 
-    pub fn apply(&mut self, coordinate: Coordinates, player_move: Move) -> Result<&mut Self, &str> {
-        if coordinate.y as usize >= self.state.len() || coordinate.x as usize >= self.state[0].len() {
+    pub fn apply(
+        &mut self,
+        coordinate: &Coordinates,
+        player_move: Move,
+    ) -> Result<&mut Self, &str> {
+        if coordinate.y as usize >= self.state.len() || coordinate.x as usize >= self.state[0].len()
+        {
             return Err("Coordinates out of bounds");
         }
 
@@ -68,5 +73,93 @@ impl Board {
         // Assign move
         self.state[coordinate.y as usize][coordinate.x as usize] = player_move;
         Ok(self)
+    }
+
+    pub fn check_win(&mut self, last_move: &Coordinates) -> Option<[Coordinates; 3]> {
+        let letter = self.state[last_move.y as usize][last_move.x as usize];
+
+        // Check the row the last move was played in
+        for x in 0..3 {
+            if self.state[last_move.y as usize][x] != letter {
+                break;
+            }
+
+            if x == 2 {
+                return Some([
+                    Coordinates {
+                        x: 0,
+                        y: last_move.y,
+                    },
+                    Coordinates {
+                        x: 1,
+                        y: last_move.y,
+                    },
+                    Coordinates {
+                        x: 2,
+                        y: last_move.y,
+                    },
+                ]);
+            }
+        }
+
+        // Check column
+        for y in 0..3 {
+            if self.state[y][last_move.x as usize] != letter {
+                break;
+            }
+
+            if y == 2 {
+                return Some([
+                    Coordinates {
+                        x: last_move.x,
+                        y: 0,
+                    },
+                    Coordinates {
+                        x: last_move.x,
+                        y: 1,
+                    },
+                    Coordinates {
+                        x: last_move.x,
+                        y: 2,
+                    },
+                ]);
+            }
+        }
+
+        // Check diagonal
+        if last_move.x == last_move.y {
+            for i in 0..3 {
+                if self.state[i][i] != letter {
+                    break;
+                }
+
+                if i == 2 {
+                    return Some([
+                        Coordinates { x: 0, y: 0 },
+                        Coordinates { x: 1, y: 1 },
+                        Coordinates { x: 2, y: 2 },
+                    ]);
+                }
+            }
+        }
+
+        if last_move.x + last_move.y == 2 {
+            for i in 0..3 {
+                println!("Checking x: {}, y: {}", 2 - i, i);
+                if self.state[i][2 - i] != letter {
+                    break;
+                }
+
+                if i == 2 {
+                    return Some([
+                        Coordinates { x: 0, y: 2 },
+                        Coordinates { x: 1, y: 1 },
+                        Coordinates { x: 2, y: 0 },
+                    ]);
+                }
+            }
+        }
+
+        None
     }
 }

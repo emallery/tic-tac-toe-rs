@@ -22,8 +22,14 @@ fn main() {
             if result.is_err() {
                 println!("Error: {}", result.err().unwrap());
                 continue;
-            }
-            else {
+            } else {
+                let win = board.check_win(&result.unwrap());
+
+                if win.is_some() {
+                    println!("Player 1 wins! {:#?}", win.unwrap());
+                    std::process::exit(0);
+                }
+
                 break;
             }
         }
@@ -39,20 +45,28 @@ fn main() {
             if result.is_err() {
                 println!("Error: {}", result.err().unwrap());
                 continue;
-            }
-            else {
+            } else {
+                let win = board.check_win(&result.unwrap());
+
+                if win.is_some() {
+                    println!("Player 2 wins! {:#?}", win.unwrap());
+                    std::process::exit(0);
+                }
+
                 break;
             }
         }
+
+        // TODO: Check stalemate
     }
 }
 
-fn apply_move<'a>(b: &'a mut Board, input: &'a String, player_move: Move) -> Result<&'a mut Board, &'a str> {
+fn apply_move(b: &mut Board, input: &String, player_move: Move) -> Result<Coordinates, String> {
     let coordinate = Coordinates::from(input.trim())?;
 
-    let move_result = b.apply(coordinate, player_move)?;
+    let _move_result = b.apply(&coordinate, player_move)?;
 
-    return Ok(move_result);
+    return Ok(coordinate);
 }
 
 fn prompt(msg: &str) -> String {
