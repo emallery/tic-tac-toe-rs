@@ -7,46 +7,52 @@ mod board;
 mod coordinates;
 
 fn main() {
-    println!("Hello, world!");
-
-    let mut b = Board::new();
+    let mut board = Board::new();
 
     // Main game loop
     loop {
-        b.print();
+        board.print();
 
-        let aaa = loop {
+        // Loop until Player 1 makes a valid move
+        loop {
             let input = prompt("Player 1 Move");
 
-            match Coordinates::from(&input.trim()) {
-                Ok(coordinates) => break coordinates,
-                Err(e) => {
-                    println!("Error: {}", e);
-                    () // ???
-                },
+            let result = apply_move(&mut board, &input, Move::X);
+
+            if result.is_err() {
+                println!("Error: {}", result.err().unwrap());
+                continue;
             }
-        };
+            else {
+                break;
+            }
+        }
 
-        println!("Move is at: {:?}", aaa);
-        b.apply(aaa, Move::X);
+        board.print();
 
-        b.print();
-
-        let aaa = loop {
+        // Loop until Player 2 makes a valid move
+        loop {
             let input = prompt("Player 2 Move");
 
-            match Coordinates::from(&input.trim()) {
-                Ok(coordinates) => break coordinates,
-                Err(e) => {
-                    println!("Error: {}", e);
-                    () // ???
-                },
-            }
-        };
+            let result = apply_move(&mut board, &input, Move::O);
 
-        println!("Move is at: {:?}", aaa);
-        b.apply(aaa, Move::O);
+            if result.is_err() {
+                println!("Error: {}", result.err().unwrap());
+                continue;
+            }
+            else {
+                break;
+            }
+        }
     }
+}
+
+fn apply_move<'a>(b: &'a mut Board, input: &'a String, player_move: Move) -> Result<&'a mut Board, &'a str> {
+    let coordinate = Coordinates::from(input.trim())?;
+
+    let move_result = b.apply(coordinate, player_move)?;
+
+    return Ok(move_result);
 }
 
 fn prompt(msg: &str) -> String {

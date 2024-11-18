@@ -32,11 +32,11 @@ impl Board {
     pub fn print(&self) {
         println!(
             "  A   B   C
-        1 {} | {} | {}
-          ------------
-        2 {} | {} | {}
-          ------------
-        3 {} | {} | {}",
+1 {} | {} | {}
+ -----------
+2 {} | {} | {}
+ -----------
+3 {} | {} | {}",
             self.state[0][0],
             self.state[0][1],
             self.state[0][2],
@@ -56,7 +56,6 @@ impl Board {
     }
 
     pub fn apply(&mut self, coordinate: Coordinates, player_move: Move) -> Result<&mut Self, &str> {
-        // TODO: Not working properly
         if coordinate.y as usize >= self.state.len() || coordinate.x as usize >= self.state[0].len() {
             return Err("Coordinates out of bounds");
         }
