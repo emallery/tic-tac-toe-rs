@@ -13,6 +13,11 @@ fn main() {
     loop {
         board.print();
 
+        if board.stalemate() {
+            println!("Stalemate! Nobody wins!");
+            std::process::exit(0);
+        }
+
         // Loop until Player 1 makes a valid move
         loop {
             let input = prompt("Player 1 Move");
@@ -36,6 +41,11 @@ fn main() {
 
         board.print();
 
+        if board.stalemate() {
+            println!("Stalemate! Nobody wins!");
+            std::process::exit(0);
+        }
+
         // Loop until Player 2 makes a valid move
         loop {
             let input = prompt("Player 2 Move");
@@ -56,8 +66,6 @@ fn main() {
                 break;
             }
         }
-
-        // TODO: Check stalemate
     }
 }
 

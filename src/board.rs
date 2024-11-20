@@ -26,6 +26,7 @@ impl std::fmt::Display for Move {
 #[derive(Debug)]
 pub struct Board {
     state: [[Move; 3]; 3],
+    moves_remaining: i32,
 }
 
 impl Board {
@@ -52,6 +53,7 @@ impl Board {
     pub fn new() -> Board {
         Board {
             state: [[Move::EMPTY; 3]; 3],
+            moves_remaining: 9,
         }
     }
 
@@ -72,6 +74,7 @@ impl Board {
 
         // Assign move
         self.state[coordinate.y as usize][coordinate.x as usize] = player_move;
+        self.moves_remaining -= 1;
         Ok(self)
     }
 
@@ -145,7 +148,6 @@ impl Board {
 
         if last_move.x + last_move.y == 2 {
             for i in 0..3 {
-                println!("Checking x: {}, y: {}", 2 - i, i);
                 if self.state[i][2 - i] != letter {
                     break;
                 }
@@ -161,5 +163,9 @@ impl Board {
         }
 
         None
+    }
+
+    pub fn stalemate(&self) -> bool {
+        self.moves_remaining <= 0
     }
 }
