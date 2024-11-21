@@ -18,26 +18,11 @@ fn main() {
             std::process::exit(0);
         }
 
-        // Loop until Player 1 makes a valid move
-        loop {
-            let input = prompt("Player 1 Move");
-
-            let result = apply_move(&mut board, &input, Move::X);
-
-            if result.is_err() {
-                println!("Error: {}", result.err().unwrap());
-                continue;
-            } else {
-                let win = board.check_win(&result.unwrap());
-
-                if win.is_some() {
-                    println!("Player 1 wins! {:#?}", win.unwrap());
-                    std::process::exit(0);
-                }
-
-                break;
-            }
-        }
+        // Handle Player 1's move
+        if player_move(&mut board, Move::X, "Player 1 Move").is_some() {
+            board.print();
+            std::process::exit(0);
+        };
 
         board.print();
 
@@ -46,43 +31,48 @@ fn main() {
             std::process::exit(0);
         }
 
-        // Loop until Player 2 makes a valid move
-        loop {
-            let input = prompt("Player 2 Move");
-
-            let result = apply_move(&mut board, &input, Move::O);
-
-            if result.is_err() {
-                println!("Error: {}", result.err().unwrap());
-                continue;
-            } else {
-                let win = board.check_win(&result.unwrap());
-
-                if win.is_some() {
-                    println!("Player 2 wins! {:#?}", win.unwrap());
-                    std::process::exit(0);
-                }
-
-                break;
-            }
-        }
+        // Handle Player 2's move
+        if player_move(&mut board, Move::O, "Player 2 Move").is_some() {
+            board.print();
+            std::process::exit(0);
+        };
     }
 }
 
+fn player_move(board: &mut Board, player: Move, prompt_msg: &str) -> Option<Move> {
+    loop {
+        let input = prompt(prompt_msg).ok()?;
+
+        match apply_move(board, &input, player) {
+            Ok(coordinate) => {
+                if let Some(win) = board.check_win(&coordinate) {
+                    println!("Player {} wins! {:?}", player, win);
+                    return Some(player);
+                }
+                break;
+            }
+            Err(err) => {
+                println!("Error: {}", err);
+            }
+        }
+    }
+
+    None
+}
+
 fn apply_move(b: &mut Board, input: &String, player_move: Move) -> Result<Coordinates, String> {
-    let coordinate = Coordinates::from(input.trim())?;
+    let coordinate = Coordinates::from(input)?;
 
     let _move_result = b.apply(&coordinate, player_move)?;
 
     return Ok(coordinate);
 }
 
-fn prompt(msg: &str) -> String {
+fn prompt(msg: &str) -> Result<String, std::io::Error> {
     let mut result = String::new();
-
     print!("{}> ", msg);
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut result).unwrap();
+    io::stdout().flush()?;
+    io::stdin().read_line(&mut result)?;
 
-    result
+    Ok(result.trim().to_string())
 }
