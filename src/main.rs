@@ -7,11 +7,11 @@ mod board;
 mod coordinates;
 
 fn main() {
-    let mut board = Board::new();
+    let mut board: Board = Default::default();
 
     // Main game loop
     loop {
-        board.print();
+        println!("{}", board);
 
         if board.stalemate() {
             println!("Stalemate! Nobody wins!");
@@ -20,11 +20,11 @@ fn main() {
 
         // Handle Player 1's move
         if player_move(&mut board, Move::X, "Player 1 Move").is_some() {
-            board.print();
+            println!("{}", board);
             std::process::exit(0);
         };
 
-        board.print();
+        println!("{}", board);
 
         if board.stalemate() {
             println!("Stalemate! Nobody wins!");
@@ -33,7 +33,7 @@ fn main() {
 
         // Handle Player 2's move
         if player_move(&mut board, Move::O, "Player 2 Move").is_some() {
-            board.print();
+            println!("{}", board);
             std::process::exit(0);
         };
     }

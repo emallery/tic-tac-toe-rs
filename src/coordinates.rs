@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Coordinates {
     pub x: i32,
     pub y: i32,
@@ -17,32 +17,19 @@ impl Coordinates {
         for i in str.chars() {
             // Parse an X coordinate
             if i.is_ascii_alphabetic() {
-                if x.is_some() {
-                    return Err("Invalid coordinate format: can't re-map x-coordinate");
-                } else {
-                    x = Some(i.to_ascii_uppercase() as i32 - 'A'.to_ascii_uppercase() as i32)
-                }
+                x = Some(i.to_ascii_uppercase() as i32 - 'A' as i32);
             }
-
             // Parse a Y coordinate
-            let digit = i.to_digit(10);
-            if digit.is_some() {
-                if y.is_some() {
-                    return Err("Invalid coordinate format: can't re-map y-coordinate");
-                } else {
-                    y = Some(digit.unwrap() as i32 - 1);
-                }
+            else if let Some(digit) = i.to_digit(10) {
+                y = Some(digit as i32 - 1);
             }
         }
 
         // Make sure both coordinates were set
-        if x.is_none() || y.is_none() {
+        if let (Some(x), Some(y)) = (x, y) {
+            return Ok(Coordinates { x, y });
+        } else {
             return Err("Missing X or Y coordinate");
         }
-
-        Ok(Coordinates {
-            x: x.unwrap(),
-            y: y.unwrap(),
-        })
     }
 }

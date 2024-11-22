@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::coordinates::Coordinates;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -29,9 +31,19 @@ pub struct Board {
     moves_remaining: i32,
 }
 
-impl Board {
-    pub fn print(&self) {
-        println!(
+impl Default for Board {
+    fn default() -> Self {
+        Board {
+            state: [[Move::EMPTY; 3]; 3],
+            moves_remaining: 9,
+        }
+    }
+}
+
+impl Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
             "  A   B   C
 1 {} | {} | {}
  -----------
@@ -49,14 +61,9 @@ impl Board {
             self.state[2][2]
         )
     }
+}
 
-    pub fn new() -> Board {
-        Board {
-            state: [[Move::EMPTY; 3]; 3],
-            moves_remaining: 9,
-        }
-    }
-
+impl Board {
     pub fn apply(
         &mut self,
         coordinate: &Coordinates,
